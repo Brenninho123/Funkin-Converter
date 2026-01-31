@@ -366,6 +366,28 @@
             background: #5a6268;
         }
 
+        .btn-add {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 0.9em;
+        }
+
+        .btn-add:hover {
+            background: #218838;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.85em;
+        }
+
+        .btn-remove:hover {
+            background: #c82333;
+        }
+
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -457,6 +479,40 @@
             margin-bottom: 10px;
         }
 
+        .animation-list {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .animation-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .animation-info {
+            flex: 1;
+        }
+
+        .animation-info strong {
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .animation-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
         @media (max-width: 768px) {
             .input-section {
                 grid-template-columns: 1fr;
@@ -504,7 +560,7 @@
                 <button class="tab" onclick="switchTab('stage')">🎬 Stages</button>
             </div>
 
-            <!-- ================ CHART CONVERTER ================ -->
+            <!-- CHART CONVERTER -->
             <div id="chart-tab" class="tab-content active">
                 <div class="info-box">
                     <h4>📋 How to use Chart Converter:</h4>
@@ -643,7 +699,7 @@
                 </div>
             </div>
 
-            <!-- ================ CHARACTER CONVERTER ================ -->
+            <!-- CHARACTER CONVERTER -->
             <div id="character-tab" class="tab-content">
                 <div class="info-box">
                     <h4>👤 How to use Character Converter:</h4>
@@ -764,7 +820,7 @@
                 </div>
             </div>
 
-            <!-- ================ STAGE CONVERTER ================ -->
+            <!-- STAGE CONVERTER -->
             <div id="stage-tab" class="tab-content">
                 <div class="info-box">
                     <h4>🎬 How to use Stage Converter:</h4>
@@ -900,7 +956,7 @@
                 <button class="tab" onclick="switchGenTab('gen-stage')">🎬 Stage Generator</button>
             </div>
 
-            <!-- ================ CHART GENERATOR ================ -->
+            <!-- CHART GENERATOR -->
             <div id="gen-chart-tab" class="tab-content active">
                 <div class="gen-info-box">
                     <h4>✨ Chart Generator - Psych Engine</h4>
@@ -1028,14 +1084,187 @@
                 </div>
             </div>
 
-            <!-- Character and Stage generators placeholders -->
+            <!-- CHARACTER GENERATOR -->
             <div id="gen-character-tab" class="tab-content">
                 <div class="gen-info-box">
-                    <h4>✨ Character Generator - Coming Soon!</h4>
-                    <p>This feature is under development. You can use the Character Converter in the Conversion mode.</p>
+                    <h4>✨ Character Generator - Psych Engine</h4>
+                    <ul>
+                        <li>Configure character basic settings (name, image, health icon)</li>
+                        <li>Set position, camera offsets, and visual properties</li>
+                        <li>Add animations (idle, sing directions, custom animations)</li>
+                        <li>Click <strong>Generate</strong> to create your character</li>
+                        <li>Download and use in Psych Engine!</li>
+                    </ul>
+                </div>
+
+                <div class="config-section">
+                    <h3>👤 Basic Settings</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Character Name:</label>
+                            <input type="text" id="genCharName" value="mycharacter" placeholder="mycharacter">
+                        </div>
+                        <div class="config-item">
+                            <label>Image Path:</label>
+                            <input type="text" id="genCharImage" value="characters/mycharacter" placeholder="characters/mycharacter">
+                        </div>
+                        <div class="config-item">
+                            <label>Health Icon:</label>
+                            <input type="text" id="genCharIcon" value="face" placeholder="face">
+                        </div>
+                        <div class="config-item">
+                            <label>Sing Duration:</label>
+                            <input type="number" id="genCharSingDuration" value="6.1" step="0.1" placeholder="6.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>📍 Position & Camera</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Position X:</label>
+                            <input type="number" id="genCharPosX" value="0" placeholder="0">
+                        </div>
+                        <div class="config-item">
+                            <label>Position Y:</label>
+                            <input type="number" id="genCharPosY" value="100" placeholder="100">
+                        </div>
+                        <div class="config-item">
+                            <label>Camera Offset X:</label>
+                            <input type="number" id="genCharCamX" value="0" placeholder="0">
+                        </div>
+                        <div class="config-item">
+                            <label>Camera Offset Y:</label>
+                            <input type="number" id="genCharCamY" value="0" placeholder="0">
+                        </div>
+                        <div class="config-item">
+                            <label>Scale:</label>
+                            <input type="number" id="genCharScale" value="1" step="0.1" placeholder="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>🎨 Visual Properties</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Healthbar Color:</label>
+                            <input type="color" id="genCharHealthColor" value="#b7d855">
+                        </div>
+                        <div class="config-item">
+                            <label>Flip X:</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="genCharFlipX">
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <label>No Antialiasing:</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="genCharNoAA">
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <label>Is Player:</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="genCharIsPlayer">
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <label>Dance Every:</label>
+                            <input type="number" id="genCharDanceEvery" value="2" placeholder="2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generation-section">
+                    <h3>🎭 Animation Preset</h3>
+                    <div class="direction-options">
+                        <label class="direction-option active" id="animPreset1">
+                            <input type="radio" name="animPreset" value="basic" checked onchange="updateAnimPreset()">
+                            <span>Basic (Idle + 4 Directions)</span>
+                        </label>
+                        <label class="direction-option" id="animPreset2">
+                            <input type="radio" name="animPreset" value="extended" onchange="updateAnimPreset()">
+                            <span>Extended (With Misses)</span>
+                        </label>
+                        <label class="direction-option" id="animPreset3">
+                            <input type="radio" name="animPreset" value="custom" onchange="updateAnimPreset()">
+                            <span>Custom (Manual)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="config-section" id="customAnimSection" style="display: none;">
+                    <h3>➕ Add Custom Animation</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Animation Name:</label>
+                            <input type="text" id="customAnimName" placeholder="singLEFT">
+                        </div>
+                        <div class="config-item">
+                            <label>XML Name:</label>
+                            <input type="text" id="customAnimXML" placeholder="BF NOTE LEFT0">
+                        </div>
+                        <div class="config-item">
+                            <label>FPS:</label>
+                            <input type="number" id="customAnimFPS" value="24" placeholder="24">
+                        </div>
+                        <div class="config-item">
+                            <label>Loop:</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="customAnimLoop">
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <label>Offset X:</label>
+                            <input type="number" id="customAnimOffsetX" value="0" placeholder="0">
+                        </div>
+                        <div class="config-item">
+                            <label>Offset Y:</label>
+                            <input type="number" id="customAnimOffsetY" value="0" placeholder="0">
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <button class="btn-add" onclick="addCustomAnimation()">
+                            <span>➕</span>
+                            <span>Add Animation</span>
+                        </button>
+                    </div>
+
+                    <div class="animation-list" id="animationList" style="display: none;">
+                        <h4 style="margin-bottom: 10px;">Added Animations:</h4>
+                        <div id="animationItems"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-generate" onclick="generateCharacter()">
+                        <span>✨</span>
+                        <span>Generate Character</span>
+                    </button>
+                    <button class="btn-download" id="downloadGenCharBtn" onclick="downloadGenCharacter()" disabled>
+                        <span>💾</span>
+                        <span>Download Character</span>
+                    </button>
+                    <button class="btn-clear" onclick="clearGenCharacter()">
+                        <span>🗑️</span>
+                        <span>Clear</span>
+                    </button>
+                </div>
+
+                <div id="genCharStatus" class="status"></div>
+
+                <div class="output-section">
+                    <h3>
+                        📤 Generated Character
+                        <span class="label-badge generate">OUTPUT</span>
+                    </h3>
+                    <textarea id="outputGenCharacter" class="output-textarea" readonly placeholder="Generated character will appear here..."></textarea>
                 </div>
             </div>
 
+            <!-- STAGE GENERATOR -->
             <div id="gen-stage-tab" class="tab-content">
                 <div class="gen-info-box">
                     <h4>✨ Stage Generator - Coming Soon!</h4>
@@ -1051,7 +1280,11 @@
             chart: { direction: 'vslice-to-psych', convertedData: null },
             character: { direction: 'vslice-to-psych', convertedData: null },
             stage: { direction: 'vslice-to-psych', convertedData: null },
-            generation: { chart: null }
+            generation: { 
+                chart: null,
+                character: null,
+                customAnimations: []
+            }
         };
 
         // ==================== MODE SWITCHING ====================
@@ -1139,147 +1372,6 @@
             document.getElementById('stageOutputPToV').style.display = isVToP ? 'none' : 'block';
             document.getElementById('downloadStageText').textContent = isVToP ? 'Download Files' : 'Download Stage';
             clearStage();
-        }
-
-        // ==================== GENERATION MODE ====================
-        function updateGenMode() {
-            const mode = document.querySelector('input[name="genMode"]:checked').value;
-            
-            document.getElementById('genMode1').classList.toggle('active', mode === 'empty');
-            document.getElementById('genMode2').classList.toggle('active', mode === 'sample');
-            document.getElementById('genMode3').classList.toggle('active', mode === 'random');
-            
-            document.getElementById('randomGenSettings').style.display = mode === 'random' ? 'block' : 'none';
-        }
-
-        function generateChart() {
-            try {
-                const songName = document.getElementById('genSongName').value || 'New Song';
-                const bpm = parseFloat(document.getElementById('genBPM').value) || 150;
-                const speed = parseFloat(document.getElementById('genSpeed').value) || 2.5;
-                const numSections = parseInt(document.getElementById('genSections').value) || 8;
-                const player1 = document.getElementById('genPlayer1').value || 'bf';
-                const player2 = document.getElementById('genPlayer2').value || 'dad';
-                const gfVersion = document.getElementById('genGF').value || 'gf';
-                const stage = document.getElementById('genStage').value || 'stage';
-                const genMode = document.querySelector('input[name="genMode"]:checked').value;
-
-                const sections = [];
-                const msPerBeat = 60000 / bpm;
-                const msPerSection = msPerBeat * 4;
-
-                for (let i = 0; i < numSections; i++) {
-                    const sectionStartTime = i * msPerSection;
-                    let sectionNotes = [];
-
-                    if (genMode === 'sample') {
-                        sectionNotes = generateSampleNotes(sectionStartTime, msPerBeat, i % 2 === 1);
-                    } else if (genMode === 'random') {
-                        const density = document.getElementById('genDensity').value;
-                        const includeSustains = document.getElementById('genSustains').checked;
-                        sectionNotes = generateRandomNotes(sectionStartTime, msPerBeat, i % 2 === 1, density, includeSustains);
-                    }
-
-                    sections.push({
-                        sectionNotes: sectionNotes,
-                        sectionBeats: 4,
-                        lengthInSteps: 16,
-                        mustHitSection: i % 2 === 1,
-                        gfSection: false,
-                        bpm: bpm,
-                        changeBPM: false,
-                        altAnim: false
-                    });
-                }
-
-                const chart = {
-                    song: {
-                        song: songName,
-                        notes: sections,
-                        bpm: bpm,
-                        needsVoices: true,
-                        player1: player1,
-                        player2: player2,
-                        gfVersion: gfVersion,
-                        speed: speed,
-                        stage: stage,
-                        validScore: true
-                    }
-                };
-
-                document.getElementById('outputGenChart').value = JSON.stringify(chart, null, '\t');
-                state.generation.chart = chart;
-                document.getElementById('downloadGenChartBtn').disabled = false;
-
-                showStatus('✅ Chart generated successfully!', 'success', 'genChartStatus');
-            } catch (error) {
-                showStatus('❌ Generation error: ' + error.message, 'error', 'genChartStatus');
-                console.error(error);
-            }
-        }
-
-        function generateSampleNotes(startTime, msPerBeat, isPlayer) {
-            const notes = [];
-            const baseOffset = isPlayer ? 4 : 0;
-
-            for (let i = 0; i < 4; i++) {
-                const time = startTime + (i * msPerBeat);
-                const direction = (i % 4) + baseOffset;
-                notes.push([time, direction, 0]);
-            }
-
-            return notes;
-        }
-
-        function generateRandomNotes(startTime, msPerBeat, isPlayer, density, includeSustains) {
-            const notes = [];
-            const baseOffset = isPlayer ? 4 : 0;
-            
-            let noteCount;
-            switch(density) {
-                case 'low': noteCount = 4; break;
-                case 'medium': noteCount = 8; break;
-                case 'high': noteCount = 12; break;
-                default: noteCount = 8;
-            }
-
-            const beatsPerSection = 4;
-
-            for (let i = 0; i < noteCount; i++) {
-                const beatPosition = Math.random() * beatsPerSection;
-                const time = startTime + (beatPosition * msPerBeat);
-                const direction = Math.floor(Math.random() * 4) + baseOffset;
-                
-                let sustain = 0;
-                if (includeSustains && Math.random() > 0.7) {
-                    sustain = msPerBeat * (Math.random() * 2);
-                }
-
-                notes.push([time, direction, sustain]);
-            }
-
-            notes.sort((a, b) => a[0] - b[0]);
-
-            return notes;
-        }
-
-        function downloadGenChart() {
-            if (!state.generation.chart) {
-                showStatus('❌ No chart to download', 'error', 'genChartStatus');
-                return;
-            }
-
-            const songName = state.generation.chart.song.song || 'new-song';
-            const filename = `${songName.toLowerCase().replace(/\s+/g, '-')}.json`;
-            downloadJSON(state.generation.chart, filename);
-            showStatus('✅ Chart download started!', 'success', 'genChartStatus');
-        }
-
-        function clearGenChart() {
-            document.getElementById('outputGenChart').value = '';
-            document.getElementById('downloadGenChartBtn').disabled = true;
-            state.generation.chart = null;
-            hideStatus('genChartStatus');
         }
 
         // ==================== CHART CONVERTER ====================
@@ -1373,11 +1465,13 @@
 
                 sections.push({
                     sectionNotes: sectionNotes,
+                    sectionBeats: 4,
                     lengthInSteps: 16,
                     mustHitSection: i % 2 === 1,
                     bpm: bpm,
                     changeBPM: false,
-                    altAnim: false
+                    altAnim: false,
+                    gfSection: false
                 });
             }
 
@@ -1609,15 +1703,10 @@
                 image: vSliceChar.asset || "characters/unknown",
                 position: vSliceChar.position || [0, 0],
                 dance_every: danceEvery,
-                gameover_intial_sound: null,
-                scalableOffsets: false,
-                gameover_confirm_sound: null,
                 healthicon: vSliceChar.healthIcon || "face",
-                gameover_character: null,
                 flip_x: vSliceChar.flipX || false,
-                healthbar_colour: colorSigned,
+                healthbar_colours: [colorSigned],
                 camera_position: vSliceChar.cameraPosition || [0, 0],
-                gameover_loop_sound: null,
                 sing_duration: singDuration,
                 scale: vSliceChar.scale || 1,
                 _editor_isPlayer: isPlayer
@@ -1643,7 +1732,7 @@
                 offsets: anim.offsets || [0, 0]
             }));
 
-            let healthColor = psychChar.healthbar_colour || 0;
+            let healthColor = psychChar.healthbar_colours ? psychChar.healthbar_colours[0] : psychChar.healthbar_colour || 0;
             if (healthColor < 0) {
                 healthColor = healthColor + 0x100000000;
             }
@@ -1943,6 +2032,340 @@
             document.getElementById('downloadStageBtn').disabled = true;
             state.stage.convertedData = null;
             hideStatus('stageStatus');
+        }
+
+        // ==================== CHART GENERATOR ====================
+        function updateGenMode() {
+            const mode = document.querySelector('input[name="genMode"]:checked').value;
+            
+            document.getElementById('genMode1').classList.toggle('active', mode === 'empty');
+            document.getElementById('genMode2').classList.toggle('active', mode === 'sample');
+            document.getElementById('genMode3').classList.toggle('active', mode === 'random');
+            
+            document.getElementById('randomGenSettings').style.display = mode === 'random' ? 'block' : 'none';
+        }
+
+        function generateChart() {
+            try {
+                const songName = document.getElementById('genSongName').value || 'New Song';
+                const bpm = parseFloat(document.getElementById('genBPM').value) || 150;
+                const speed = parseFloat(document.getElementById('genSpeed').value) || 2.5;
+                const numSections = parseInt(document.getElementById('genSections').value) || 8;
+                const player1 = document.getElementById('genPlayer1').value || 'bf';
+                const player2 = document.getElementById('genPlayer2').value || 'dad';
+                const gfVersion = document.getElementById('genGF').value || 'gf';
+                const stage = document.getElementById('genStage').value || 'stage';
+                const genMode = document.querySelector('input[name="genMode"]:checked').value;
+
+                const sections = [];
+                const msPerBeat = 60000 / bpm;
+                const msPerSection = msPerBeat * 4;
+
+                for (let i = 0; i < numSections; i++) {
+                    const sectionStartTime = i * msPerSection;
+                    let sectionNotes = [];
+
+                    if (genMode === 'sample') {
+                        sectionNotes = generateSampleNotes(sectionStartTime, msPerBeat, i % 2 === 1);
+                    } else if (genMode === 'random') {
+                        const density = document.getElementById('genDensity').value;
+                        const includeSustains = document.getElementById('genSustains').checked;
+                        sectionNotes = generateRandomNotes(sectionStartTime, msPerBeat, i % 2 === 1, density, includeSustains);
+                    }
+
+                    sections.push({
+                        sectionNotes: sectionNotes,
+                        sectionBeats: 4,
+                        lengthInSteps: 16,
+                        mustHitSection: i % 2 === 1,
+                        gfSection: false,
+                        bpm: bpm,
+                        changeBPM: false,
+                        altAnim: false
+                    });
+                }
+
+                const chart = {
+                    song: {
+                        song: songName,
+                        notes: sections,
+                        bpm: bpm,
+                        needsVoices: true,
+                        player1: player1,
+                        player2: player2,
+                        gfVersion: gfVersion,
+                        speed: speed,
+                        stage: stage,
+                        validScore: true
+                    }
+                };
+
+                document.getElementById('outputGenChart').value = JSON.stringify(chart, null, '\t');
+                state.generation.chart = chart;
+                document.getElementById('downloadGenChartBtn').disabled = false;
+
+                showStatus('✅ Chart generated successfully!', 'success', 'genChartStatus');
+            } catch (error) {
+                showStatus('❌ Generation error: ' + error.message, 'error', 'genChartStatus');
+                console.error(error);
+            }
+        }
+
+        function generateSampleNotes(startTime, msPerBeat, isPlayer) {
+            const notes = [];
+            const baseOffset = isPlayer ? 4 : 0;
+
+            for (let i = 0; i < 4; i++) {
+                const time = startTime + (i * msPerBeat);
+                const direction = (i % 4) + baseOffset;
+                notes.push([time, direction, 0]);
+            }
+
+            return notes;
+        }
+
+        function generateRandomNotes(startTime, msPerBeat, isPlayer, density, includeSustains) {
+            const notes = [];
+            const baseOffset = isPlayer ? 4 : 0;
+            
+            let noteCount;
+            switch(density) {
+                case 'low': noteCount = 4; break;
+                case 'medium': noteCount = 8; break;
+                case 'high': noteCount = 12; break;
+                default: noteCount = 8;
+            }
+
+            const beatsPerSection = 4;
+
+            for (let i = 0; i < noteCount; i++) {
+                const beatPosition = Math.random() * beatsPerSection;
+                const time = startTime + (beatPosition * msPerBeat);
+                const direction = Math.floor(Math.random() * 4) + baseOffset;
+                
+                let sustain = 0;
+                if (includeSustains && Math.random() > 0.7) {
+                    sustain = msPerBeat * (Math.random() * 2);
+                }
+
+                notes.push([time, direction, sustain]);
+            }
+
+            notes.sort((a, b) => a[0] - b[0]);
+
+            return notes;
+        }
+
+        function downloadGenChart() {
+            if (!state.generation.chart) {
+                showStatus('❌ No chart to download', 'error', 'genChartStatus');
+                return;
+            }
+
+            const songName = state.generation.chart.song.song || 'new-song';
+            const filename = `${songName.toLowerCase().replace(/\s+/g, '-')}.json`;
+            downloadJSON(state.generation.chart, filename);
+            showStatus('✅ Chart download started!', 'success', 'genChartStatus');
+        }
+
+        function clearGenChart() {
+            document.getElementById('outputGenChart').value = '';
+            document.getElementById('downloadGenChartBtn').disabled = true;
+            state.generation.chart = null;
+            hideStatus('genChartStatus');
+        }
+
+        // ==================== CHARACTER GENERATOR ====================
+        function updateAnimPreset() {
+            const preset = document.querySelector('input[name="animPreset"]:checked').value;
+            
+            document.getElementById('animPreset1').classList.toggle('active', preset === 'basic');
+            document.getElementById('animPreset2').classList.toggle('active', preset === 'extended');
+            document.getElementById('animPreset3').classList.toggle('active', preset === 'custom');
+            
+            document.getElementById('customAnimSection').style.display = preset === 'custom' ? 'block' : 'none';
+            
+            if (preset === 'custom') {
+                state.generation.customAnimations = [];
+                updateAnimationList();
+            }
+        }
+
+        function addCustomAnimation() {
+            const name = document.getElementById('customAnimName').value.trim();
+            const xmlName = document.getElementById('customAnimXML').value.trim();
+            const fps = parseInt(document.getElementById('customAnimFPS').value) || 24;
+            const loop = document.getElementById('customAnimLoop').checked;
+            const offsetX = parseInt(document.getElementById('customAnimOffsetX').value) || 0;
+            const offsetY = parseInt(document.getElementById('customAnimOffsetY').value) || 0;
+
+            if (!name || !xmlName) {
+                showStatus('⚠️ Please fill Animation Name and XML Name', 'error', 'genCharStatus');
+                return;
+            }
+
+            const animation = {
+                anim: name,
+                name: xmlName,
+                fps: fps,
+                loop: loop,
+                offsets: [offsetX, offsetY],
+                indices: [],
+                flipX: false,
+                flipY: false
+            };
+
+            state.generation.customAnimations.push(animation);
+            
+            document.getElementById('customAnimName').value = '';
+            document.getElementById('customAnimXML').value = '';
+            document.getElementById('customAnimFPS').value = '24';
+            document.getElementById('customAnimLoop').checked = false;
+            document.getElementById('customAnimOffsetX').value = '0';
+            document.getElementById('customAnimOffsetY').value = '0';
+
+            updateAnimationList();
+            showStatus('✅ Animation added!', 'success', 'genCharStatus');
+        }
+
+        function updateAnimationList() {
+            const container = document.getElementById('animationItems');
+            const listDiv = document.getElementById('animationList');
+            
+            if (state.generation.customAnimations.length === 0) {
+                listDiv.style.display = 'none';
+                return;
+            }
+
+            listDiv.style.display = 'block';
+            container.innerHTML = '';
+
+            state.generation.customAnimations.forEach((anim, index) => {
+                const item = document.createElement('div');
+                item.className = 'animation-item';
+                item.innerHTML = `
+                    <div class="animation-info">
+                        <strong>${anim.anim}</strong>
+                        <div class="animation-details">
+                            XML: ${anim.name} | FPS: ${anim.fps} | Loop: ${anim.loop ? 'Yes' : 'No'} | Offset: [${anim.offsets[0]}, ${anim.offsets[1]}]
+                        </div>
+                    </div>
+                    <button class="btn-remove" onclick="removeAnimation(${index})">
+                        <span>🗑️</span>
+                        <span>Remove</span>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function removeAnimation(index) {
+            state.generation.customAnimations.splice(index, 1);
+            updateAnimationList();
+        }
+
+        function generateCharacter() {
+            try {
+                const charName = document.getElementById('genCharName').value || 'mycharacter';
+                const imagePath = document.getElementById('genCharImage').value || 'characters/mycharacter';
+                const healthIcon = document.getElementById('genCharIcon').value || 'face';
+                const singDuration = parseFloat(document.getElementById('genCharSingDuration').value) || 6.1;
+                
+                const posX = parseInt(document.getElementById('genCharPosX').value) || 0;
+                const posY = parseInt(document.getElementById('genCharPosY').value) || 100;
+                const camX = parseInt(document.getElementById('genCharCamX').value) || 0;
+                const camY = parseInt(document.getElementById('genCharCamY').value) || 0;
+                const scale = parseFloat(document.getElementById('genCharScale').value) || 1;
+                
+                const healthColor = document.getElementById('genCharHealthColor').value;
+                const flipX = document.getElementById('genCharFlipX').checked;
+                const noAA = document.getElementById('genCharNoAA').checked;
+                const isPlayer = document.getElementById('genCharIsPlayer').checked;
+                const danceEvery = parseInt(document.getElementById('genCharDanceEvery').value) || 2;
+
+                const colorHex = healthColor.replace('#', '');
+                const r = parseInt(colorHex.substr(0, 2), 16);
+                const g = parseInt(colorHex.substr(2, 2), 16);
+                const b = parseInt(colorHex.substr(4, 2), 16);
+
+                const preset = document.querySelector('input[name="animPreset"]:checked').value;
+                let animations = [];
+
+                if (preset === 'basic') {
+                    animations = [
+                        { loop: false, offsets: [0, 0], anim: "idle", fps: 24, name: "Idle0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singLEFT", fps: 24, name: "LEFT0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singDOWN", fps: 24, name: "DOWN0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singUP", fps: 24, name: "UP0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singRIGHT", fps: 24, name: "RIGHT0", indices: [], flipX: false, flipY: false }
+                    ];
+                } else if (preset === 'extended') {
+                    animations = [
+                        { loop: false, offsets: [0, 0], anim: "idle", fps: 24, name: "Idle0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singLEFT", fps: 24, name: "LEFT0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singDOWN", fps: 24, name: "DOWN0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singUP", fps: 24, name: "UP0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singRIGHT", fps: 24, name: "RIGHT0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singLEFTmiss", fps: 24, name: "LEFT MISS0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singDOWNmiss", fps: 24, name: "DOWN MISS0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singUPmiss", fps: 24, name: "UP MISS0", indices: [], flipX: false, flipY: false },
+                        { loop: false, offsets: [0, 0], anim: "singRIGHTmiss", fps: 24, name: "RIGHT MISS0", indices: [], flipX: false, flipY: false }
+                    ];
+                } else if (preset === 'custom') {
+                    animations = state.generation.customAnimations;
+                    
+                    if (animations.length === 0) {
+                        showStatus('⚠️ Please add at least one animation', 'error', 'genCharStatus');
+                        return;
+                    }
+                }
+
+                const character = {
+                    animations: animations,
+                    vocals_file: "",
+                    no_antialiasing: noAA,
+                    image: imagePath,
+                    position: [posX, posY],
+                    healthicon: healthIcon,
+                    flip_x: flipX,
+                    healthbar_colors: [r, g, b],
+                    camera_position: [camX, camY],
+                    sing_duration: singDuration,
+                    scale: scale,
+                    dance_every: danceEvery,
+                    _editor_isPlayer: isPlayer
+                };
+
+                document.getElementById('outputGenCharacter').value = JSON.stringify(character, null, '\t');
+                state.generation.character = character;
+                document.getElementById('downloadGenCharBtn').disabled = false;
+
+                showStatus('✅ Character generated successfully!', 'success', 'genCharStatus');
+            } catch (error) {
+                showStatus('❌ Generation error: ' + error.message, 'error', 'genCharStatus');
+                console.error(error);
+            }
+        }
+
+        function downloadGenCharacter() {
+            if (!state.generation.character) {
+                showStatus('❌ No character to download', 'error', 'genCharStatus');
+                return;
+            }
+
+            const charName = state.generation.character.healthicon || 'character';
+            const filename = `${charName.toLowerCase().replace(/\s+/g, '-')}.json`;
+            downloadJSON(state.generation.character, filename);
+            showStatus('✅ Character download started!', 'success', 'genCharStatus');
+        }
+
+        function clearGenCharacter() {
+            document.getElementById('outputGenCharacter').value = '';
+            document.getElementById('downloadGenCharBtn').disabled = true;
+            state.generation.character = null;
+            state.generation.customAnimations = [];
+            updateAnimationList();
+            hideStatus('genCharStatus');
         }
 
         // ==================== UTILITY FUNCTIONS ====================
