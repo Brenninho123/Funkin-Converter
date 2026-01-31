@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V Slice para Psych Engine Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .config-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-item label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .config-item input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .config-item input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-convert {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-convert:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #5a6268;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .output-section {
+            margin-top: 30px;
+        }
+
+        .output-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        #outputChart {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+        }
+
+        .info-box li {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 V Slice → Psych Engine</h1>
+            <p>Conversor de Charts FNF</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h4>📋 Como usar:</h4>
+                <ul>
+                    <li>Cole o JSON do <strong>V Slice Chart</strong> no primeiro campo</li>
+                    <li>Cole o JSON do <strong>V Slice Metadata</strong> no segundo campo</li>
+                    <li>Configure os personagens e stage (opcional)</li>
+                    <li>Clique em <strong>Converter</strong></li>
+                    <li>Baixe o arquivo convertido para Psych Engine</li>
+                </ul>
+            </div>
+
+            <div class="config-section">
+                <h3>⚙️ Configurações do Chart</h3>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Player 1 (BF):</label>
+                        <input type="text" id="player1" value="bf" placeholder="bf">
+                    </div>
+                    <div class="config-item">
+                        <label>Player 2 (Opponent):</label>
+                        <input type="text" id="player2" value="dad" placeholder="dad">
+                    </div>
+                    <div class="config-item">
+                        <label>Girlfriend:</label>
+                        <input type="text" id="gfVersion" value="gf" placeholder="gf">
+                    </div>
+                    <div class="config-item">
+                        <label>Stage:</label>
+                        <input type="text" id="stage" value="stage" placeholder="stage">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label>V Slice Chart JSON:</label>
+                    <textarea id="vSliceChart" placeholder='Cole aqui o JSON do V Slice Chart...
+Exemplo:
+{
+  "version": "2.0.0",
+  "scrollSpeed": {
+    "normal": 2.7
+  },
+  "notes": {
+    "normal": [...]
+  }
+}'></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>V Slice Metadata JSON:</label>
+                    <textarea id="vSliceMetadata" placeholder='Cole aqui o JSON do V Slice Metadata...
+Exemplo:
+{
+  "version": "2.2.4",
+  "songName": "Music-For-Your-Ears",
+  "timeChanges": [
+    {
+      "t": 0,
+      "bpm": 87
+    }
+  ]
+}'></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-convert" onclick="convertChart()">🔄 Converter</button>
+                <button class="btn-download" id="downloadBtn" onclick="downloadChart()" disabled>💾 Download JSON</button>
+                <button class="btn-clear" onclick="clearAll()">🗑️ Limpar Tudo</button>
+            </div>
+
+            <div id="status" class="status"></div>
+
+            <div class="output-section">
+                <h3>📤 Psych Engine Chart (Resultado):</h3>
+                <textarea id="outputChart" readonly placeholder="O chart convertido aparecerá aqui..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let convertedData = null;
+
+        function convertChart() {
+            try {
+                // Obter inputs
+                const vSliceChartText = document.getElementById('vSliceChart').value;
+                const vSliceMetadataText = document.getElementById('vSliceMetadata').value;
+
+                if (!vSliceChartText || !vSliceMetadataText) {
+                    showStatus('Por favor, preencha ambos os campos (Chart e Metadata)', 'error');
+                    return;
+                }
+
+                // Parse JSON
+                const vSliceChart = JSON.parse(vSliceChartText);
+                const vSliceMetadata = JSON.parse(vSliceMetadataText);
+
+                // Converter
+                const psychChart = vSliceToPsychEngine(vSliceChart, vSliceMetadata);
+
+                // Mostrar resultado
+                const outputText = JSON.stringify(psychChart, null, '\t');
+                document.getElementById('outputChart').value = outputText;
+                convertedData = psychChart;
+
+                // Habilitar botão de download
+                document.getElementById('downloadBtn').disabled = false;
+
+                showStatus('✅ Conversão realizada com sucesso!', 'success');
+            } catch (error) {
+                showStatus('❌ Erro na conversão: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+
+        function vSliceToPsychEngine(vSliceChart, vSliceMetadata) {
+            const bpm = vSliceMetadata.timeChanges[0].bpm;
+            const songName = vSliceMetadata.songName || "Unknown";
+            const scrollSpeed = vSliceChart.scrollSpeed.normal;
+            const notes = vSliceChart.notes.normal || [];
+
+            // Configurações do usuário
+            const player1 = document.getElementById('player1').value || 'bf';
+            const player2 = document.getElementById('player2').value || 'dad';
+            const gfVersion = document.getElementById('gfVersion').value || 'gf';
+            const stage = document.getElementById('stage').value || 'stage';
+
+            // Calcular duração de seção (4 beats = 16 steps)
+            const msPerBeat = 60000 / bpm;
+            const msPerSection = msPerBeat * 4;
+
+            // Encontrar tempo máximo
+            const maxTime = notes.length > 0 ? Math.max(...notes.map(n => n.t + (n.l || 0))) : 0;
+            const numSections = Math.ceil(maxTime / msPerSection) || 1;
+
+            // Criar seções
+            const sections = [];
+            for (let i = 0; i < numSections; i++) {
+                const sectionStartTime = i * msPerSection;
+                const sectionEndTime = (i + 1) * msPerSection;
+
+                const sectionNotes = notes
+                    .filter(note => note.t >= sectionStartTime && note.t < sectionEndTime)
+                    .map(note => {
+                        // Mapear direção V Slice para Psych Engine
+                        // V Slice: 0-3 = opponent, 4-7 = player
+                        // Psych: 0-3 para ambos, mustHitSection determina quem
+                        let direction = note.d % 4;
+                        const isPlayerNote = note.d >= 4 && note.d <= 7;
+                        
+                        // Se a nota é do jogador mas a seção é do oponente (ou vice-versa),
+                        // adicionar 4 para mover para o outro lado
+                        const mustHitSection = i % 2 === 1; // Alternar seções
+                        if (isPlayerNote !== mustHitSection) {
+                            direction += 4;
+                        }
+
+                        return [
+                            note.t,           // tempo
+                            direction,        // direção (0-7)
+                            note.l || 0      // duração sustain
+                        ];
+                    });
+
+                sections.push({
+                    sectionNotes: sectionNotes,
+                    lengthInSteps: 16,
+                    mustHitSection: i % 2 === 1, // Alternar entre opponent e player
+                    bpm: bpm,
+                    changeBPM: false,
+                    altAnim: false
+                });
+            }
+
+            // Retornar chart no formato Psych Engine
+            return {
+                song: {
+                    song: songName,
+                    notes: sections,
+                    bpm: bpm,
+                    needsVoices: true,
+                    player1: player1,
+                    player2: player2,
+                    gfVersion: gfVersion,
+                    speed: scrollSpeed,
+                    stage: stage,
+                    validScore: true
+                }
+            };
+        }
+
+        function downloadChart() {
+            if (!convertedData) {
+                showStatus('❌ Nenhum chart para baixar', 'error');
+                return;
+            }
+
+            const songName = convertedData.song.song || 'converted';
+            const filename = `${songName.toLowerCase().replace(/\s+/g, '-')}.json`;
+            const jsonStr = JSON.stringify(convertedData, null, '\t');
+            
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showStatus('✅ Download iniciado!', 'success');
+        }
+
+        function clearAll() {
+            document.getElementById('vSliceChart').value = '';
+            document.getElementById('vSliceMetadata').value = '';
+            document.getElementById('outputChart').value = '';
+            document.getElementById('downloadBtn').disabled = true;
+            convertedData = null;
+            hideStatus();
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+            statusDiv.style.display = 'block';
+        }
+
+        function hideStatus() {
+            document.getElementById('status').style.display = 'none';
+        }
+
+        // Exemplo de dados para teste rápido
+        function loadExample() {
+            const exampleChart = {
+                "version": "2.0.0",
+                "scrollSpeed": { "normal": 2.7 },
+                "notes": {
+                    "normal": [
+                        { "t": 2327.58620689655, "d": 5, "l": 0, "p": [] },
+                        { "t": 2500, "d": 7, "l": 0, "p": [] },
+                        { "t": 2758.62068965517, "d": 6, "l": 0, "p": [] }
+                    ]
+                }
+            };
+
+            const exampleMetadata = {
+                "version": "2.2.4",
+                "songName": "Test-Song",
+                "artist": "Unknown",
+                "timeChanges": [
+                    { "t": 0, "b": 0, "bpm": 87, "n": 4, "d": 4 }
+                ]
+            };
+
+            document.getElementById('vSliceChart').value = JSON.stringify(exampleChart, null, 2);
+            document.getElementById('vSliceMetadata').value = JSON.stringify(exampleMetadata, null, 2);
+        }
+    </script>
+</body>
+</html>
