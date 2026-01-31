@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V Slice para Psych Engine Converter</title>
+    <title>Funkin' Converter - V Slice ⇄ Psych Engine</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -44,8 +44,101 @@
             font-size: 1.1em;
         }
 
-        .content {
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            background: #e9ecef;
+            border: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab:hover {
+            background: #dee2e6;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .tab-content {
+            display: none;
             padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .direction-selector {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .direction-selector h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .direction-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .direction-option {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        .direction-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .direction-option.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .direction-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
 
         .input-section {
@@ -53,6 +146,10 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
+        }
+
+        .input-section.single {
+            grid-template-columns: 1fr;
         }
 
         .input-group {
@@ -65,23 +162,72 @@
             margin-bottom: 10px;
             color: #333;
             font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .label-badge {
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: normal;
+        }
+
+        .label-badge.lua {
+            background: #5a67d8;
         }
 
         textarea {
             width: 100%;
-            min-height: 300px;
+            min-height: 350px;
             padding: 15px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
             font-size: 12px;
             resize: vertical;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            background: #f8f9fa;
         }
 
         textarea:focus {
             outline: none;
             border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .file-upload:hover {
+            background: #e7f3ff;
+            border-color: #5a67d8;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            cursor: pointer;
+            display: block;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #667eea;
+            font-weight: bold;
         }
 
         .config-section {
@@ -89,11 +235,15 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
+            border: 2px solid #e9ecef;
         }
 
         .config-section h3 {
             margin-bottom: 15px;
             color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .config-grid {
@@ -111,18 +261,34 @@
             font-weight: 600;
             margin-bottom: 5px;
             color: #555;
+            font-size: 0.95em;
         }
 
-        .config-item input {
+        .config-item input,
+        .config-item select {
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
+            transition: border-color 0.3s;
         }
 
-        .config-item input:focus {
+        .config-item input:focus,
+        .config-item select:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        .config-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .button-group {
@@ -130,6 +296,7 @@
             gap: 15px;
             justify-content: center;
             margin: 30px 0;
+            flex-wrap: wrap;
         }
 
         button {
@@ -141,6 +308,9 @@
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-convert {
@@ -148,7 +318,7 @@
             color: white;
         }
 
-        .btn-convert:hover {
+        .btn-convert:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
@@ -158,7 +328,7 @@
             color: white;
         }
 
-        .btn-download:hover {
+        .btn-download:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
         }
@@ -175,6 +345,7 @@
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none !important;
         }
 
         .output-section {
@@ -184,9 +355,12 @@
         .output-section h3 {
             margin-bottom: 15px;
             color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        #outputChart {
+        .output-textarea {
             background: #f8f9fa;
             border: 2px solid #ddd;
         }
@@ -196,17 +370,29 @@
             border-radius: 8px;
             margin: 20px 0;
             display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .status.success {
             background: #d4edda;
-            border: 1px solid #c3e6cb;
+            border: 2px solid #c3e6cb;
             color: #155724;
         }
 
         .status.error {
             background: #f8d7da;
-            border: 1px solid #f5c6cb;
+            border: 2px solid #f5c6cb;
             color: #721c24;
         }
 
@@ -221,6 +407,9 @@
         .info-box h4 {
             color: #1976D2;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .info-box ul {
@@ -243,30 +432,63 @@
             .button-group {
                 flex-direction: column;
             }
+
+            button {
+                justify-content: center;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .direction-options {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎵 V Slice → Psych Engine</h1>
-            <p>Conversor de Charts FNF</p>
+            <h1>🎵 Funkin' Converter</h1>
+            <p>V Slice ⇄ Psych Engine - Complete Bidirectional Conversion</p>
         </div>
 
-        <div class="content">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('chart')">📊 Charts</button>
+            <button class="tab" onclick="switchTab('character')">👤 Characters</button>
+            <button class="tab" onclick="switchTab('stage')">🎬 Stages</button>
+        </div>
+
+        <!-- ================ TAB: CHART CONVERTER ================ -->
+        <div id="chart-tab" class="tab-content active">
             <div class="info-box">
-                <h4>📋 Como usar:</h4>
+                <h4>📋 How to use Chart Converter:</h4>
                 <ul>
-                    <li>Cole o JSON do <strong>V Slice Chart</strong> no primeiro campo</li>
-                    <li>Cole o JSON do <strong>V Slice Metadata</strong> no segundo campo</li>
-                    <li>Configure os personagens e stage (opcional)</li>
-                    <li>Clique em <strong>Converter</strong></li>
-                    <li>Baixe o arquivo convertido para Psych Engine</li>
+                    <li>Choose the <strong>conversion direction</strong></li>
+                    <li>Paste the JSON in the appropriate field(s)</li>
+                    <li>Configure options (if needed)</li>
+                    <li>Click <strong>Convert</strong></li>
+                    <li>Download the converted files</li>
                 </ul>
             </div>
 
-            <div class="config-section">
-                <h3>⚙️ Configurações do Chart</h3>
+            <div class="direction-selector">
+                <h3>🔄 Conversion Direction</h3>
+                <div class="direction-options">
+                    <label class="direction-option active" id="chartDir1">
+                        <input type="radio" name="chartDirection" value="vslice-to-psych" checked onchange="updateChartDirection()">
+                        <span>V Slice → Psych Engine</span>
+                    </label>
+                    <label class="direction-option" id="chartDir2">
+                        <input type="radio" name="chartDirection" value="psych-to-vslice" onchange="updateChartDirection()">
+                        <span>Psych Engine → V Slice</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="config-section" id="chartConfigVToPsych">
+                <h3>⚙️ Chart Settings (Psych Engine)</h3>
                 <div class="config-grid">
                     <div class="config-item">
                         <label>Player 1 (BF):</label>
@@ -287,111 +509,486 @@
                 </div>
             </div>
 
-            <div class="input-section">
-                <div class="input-group">
-                    <label>V Slice Chart JSON:</label>
-                    <textarea id="vSliceChart" placeholder='Cole aqui o JSON do V Slice Chart...
-Exemplo:
-{
-  "version": "2.0.0",
-  "scrollSpeed": {
-    "normal": 2.7
-  },
-  "notes": {
-    "normal": [...]
-  }
-}'></textarea>
+            <div class="config-section" id="chartConfigPToV" style="display: none;">
+                <h3>⚙️ Chart Settings (V Slice)</h3>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Scroll Speed:</label>
+                        <input type="number" id="scrollSpeed" value="2.7" step="0.1" placeholder="2.7">
+                    </div>
+                    <div class="config-item">
+                        <label>Artist:</label>
+                        <input type="text" id="artist" value="Unknown" placeholder="Unknown">
+                    </div>
+                    <div class="config-item">
+                        <label>Charter:</label>
+                        <input type="text" id="charter" value="Converter" placeholder="Converter">
+                    </div>
                 </div>
+            </div>
 
+            <div id="chartInputVToPsych" class="input-section">
                 <div class="input-group">
-                    <label>V Slice Metadata JSON:</label>
-                    <textarea id="vSliceMetadata" placeholder='Cole aqui o JSON do V Slice Metadata...
-Exemplo:
-{
-  "version": "2.2.4",
-  "songName": "Music-For-Your-Ears",
-  "timeChanges": [
-    {
-      "t": 0,
-      "bpm": 87
-    }
-  ]
-}'></textarea>
+                    <label>
+                        V Slice Chart JSON
+                        <span class="label-badge">INPUT</span>
+                    </label>
+                    <textarea id="vSliceChart" placeholder='Paste V Slice Chart JSON here...'></textarea>
+                </div>
+                <div class="input-group">
+                    <label>
+                        V Slice Metadata JSON
+                        <span class="label-badge">INPUT</span>
+                    </label>
+                    <textarea id="vSliceMetadata" placeholder='Paste V Slice Metadata JSON here...'></textarea>
+                </div>
+            </div>
+
+            <div id="chartInputPToV" class="input-section single" style="display: none;">
+                <div class="input-group">
+                    <label>
+                        Psych Engine Chart JSON
+                        <span class="label-badge">INPUT</span>
+                    </label>
+                    <textarea id="psychChart" placeholder='Paste Psych Engine Chart JSON here...'></textarea>
                 </div>
             </div>
 
             <div class="button-group">
-                <button class="btn-convert" onclick="convertChart()">🔄 Converter</button>
-                <button class="btn-download" id="downloadBtn" onclick="downloadChart()" disabled>💾 Download JSON</button>
-                <button class="btn-clear" onclick="clearAll()">🗑️ Limpar Tudo</button>
+                <button class="btn-convert" onclick="convertChart()">
+                    <span>🔄</span>
+                    <span>Convert Chart</span>
+                </button>
+                <button class="btn-download" id="downloadChartBtn" onclick="downloadChart()" disabled>
+                    <span>💾</span>
+                    <span id="downloadChartText">Download</span>
+                </button>
+                <button class="btn-clear" onclick="clearChart()">
+                    <span>🗑️</span>
+                    <span>Clear</span>
+                </button>
             </div>
 
-            <div id="status" class="status"></div>
+            <div id="chartStatus" class="status"></div>
 
-            <div class="output-section">
-                <h3>📤 Psych Engine Chart (Resultado):</h3>
-                <textarea id="outputChart" readonly placeholder="O chart convertido aparecerá aqui..."></textarea>
+            <div class="output-section" id="chartOutputVToPsych">
+                <h3>
+                    📤 Psych Engine Chart
+                    <span class="label-badge">OUTPUT</span>
+                </h3>
+                <textarea id="outputChart" class="output-textarea" readonly placeholder="Converted chart will appear here..."></textarea>
+            </div>
+
+            <div class="output-section" id="chartOutputPToV" style="display: none;">
+                <div class="input-section">
+                    <div class="input-group">
+                        <h3>
+                            📤 V Slice Chart
+                            <span class="label-badge">OUTPUT</span>
+                        </h3>
+                        <textarea id="outputVSliceChart" class="output-textarea" readonly placeholder="V Slice Chart will appear here..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <h3>
+                            📤 V Slice Metadata
+                            <span class="label-badge">OUTPUT</span>
+                        </h3>
+                        <textarea id="outputVSliceMetadata" class="output-textarea" readonly placeholder="V Slice Metadata will appear here..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================ TAB: CHARACTER CONVERTER ================ -->
+        <div id="character-tab" class="tab-content">
+            <div class="info-box">
+                <h4>👤 How to use Character Converter:</h4>
+                <ul>
+                    <li>Choose the <strong>conversion direction</strong></li>
+                    <li>Paste the character JSON</li>
+                    <li>Configure additional options</li>
+                    <li>Click <strong>Convert</strong></li>
+                    <li>Download the converted file</li>
+                </ul>
+            </div>
+
+            <div class="direction-selector">
+                <h3>🔄 Conversion Direction</h3>
+                <div class="direction-options">
+                    <label class="direction-option active" id="charDir1">
+                        <input type="radio" name="charDirection" value="vslice-to-psych" checked onchange="updateCharDirection()">
+                        <span>V Slice → Psych Engine</span>
+                    </label>
+                    <label class="direction-option" id="charDir2">
+                        <input type="radio" name="charDirection" value="psych-to-vslice" onchange="updateCharDirection()">
+                        <span>Psych Engine → V Slice</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="config-section" id="charConfigVToPsych">
+                <h3>⚙️ Additional Settings (Psych Engine)</h3>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Sing Duration:</label>
+                        <input type="number" id="singDuration" value="6.1" step="0.1" placeholder="6.1">
+                    </div>
+                    <div class="config-item">
+                        <label>Dance Every:</label>
+                        <input type="number" id="danceEvery" value="2" placeholder="2">
+                    </div>
+                    <div class="config-item">
+                        <label>Healthbar Color:</label>
+                        <input type="color" id="healthbarColor" value="#b7d855">
+                    </div>
+                    <div class="config-item">
+                        <label>No Antialiasing:</label>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="noAntialiasing">
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <label>Is Player:</label>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="isPlayer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section" id="charConfigPToV" style="display: none;">
+                <h3>⚙️ Additional Settings (V Slice)</h3>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Default FPS:</label>
+                        <input type="number" id="defaultFPS" value="24" placeholder="24">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section single" id="charInputVToPsych">
+                <div class="input-group">
+                    <label>
+                        V Slice Character JSON
+                        <span class="label-badge">INPUT</span>
+                    </label>
+                    <textarea id="vSliceCharacter" placeholder='Paste V Slice Character JSON here...'></textarea>
+                </div>
+            </div>
+
+            <div class="input-section single" id="charInputPToV" style="display: none;">
+                <div class="input-group">
+                    <label>
+                        Psych Engine Character JSON
+                        <span class="label-badge">INPUT</span>
+                    </label>
+                    <textarea id="psychCharacter" placeholder='Paste Psych Engine Character JSON here...'></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-convert" onclick="convertCharacter()">
+                    <span>🔄</span>
+                    <span>Convert Character</span>
+                </button>
+                <button class="btn-download" id="downloadCharBtn" onclick="downloadCharacter()" disabled>
+                    <span>💾</span>
+                    <span>Download Character</span>
+                </button>
+                <button class="btn-clear" onclick="clearCharacter()">
+                    <span>🗑️</span>
+                    <span>Clear</span>
+                </button>
+            </div>
+
+            <div id="charStatus" class="status"></div>
+
+            <div class="output-section" id="charOutputVToPsych">
+                <h3>
+                    📤 Psych Engine Character
+                    <span class="label-badge">OUTPUT</span>
+                </h3>
+                <textarea id="outputCharacter" class="output-textarea" readonly placeholder="Converted character will appear here..."></textarea>
+            </div>
+
+            <div class="output-section" id="charOutputPToV" style="display: none;">
+                <h3>
+                    📤 V Slice Character
+                    <span class="label-badge">OUTPUT</span>
+                </h3>
+                <textarea id="outputVSliceCharacter" class="output-textarea" readonly placeholder="V Slice character will appear here..."></textarea>
+            </div>
+        </div>
+
+        <!-- ================ TAB: STAGE CONVERTER ================ -->
+        <div id="stage-tab" class="tab-content">
+            <div class="info-box">
+                <h4>🎬 How to use Stage Converter:</h4>
+                <ul>
+                    <li>Choose the <strong>conversion direction</strong></li>
+                    <li>Paste the stage JSON (and Lua if converting from Psych)</li>
+                    <li>Configure stage settings</li>
+                    <li>Click <strong>Convert</strong></li>
+                    <li>Download the converted files</li>
+                </ul>
+            </div>
+
+            <div class="direction-selector">
+                <h3>🔄 Conversion Direction</h3>
+                <div class="direction-options">
+                    <label class="direction-option active" id="stageDir1">
+                        <input type="radio" name="stageDirection" value="vslice-to-psych" checked onchange="updateStageDirection()">
+                        <span>V Slice → Psych Engine</span>
+                    </label>
+                    <label class="direction-option" id="stageDir2">
+                        <input type="radio" name="stageDirection" value="psych-to-vslice" onchange="updateStageDirection()">
+                        <span>Psych Engine → V Slice</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="config-section" id="stageConfigVToPsych">
+                <h3>⚙️ Stage Settings (Psych Engine)</h3>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Generate Lua Script:</label>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="generateLua" checked>
+                            <span style="font-size: 0.9em; color: #666;">Creates onCreate() function with sprites</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section" id="stageConfigPToV" style="display: none;">
+                <h3>⚙️ Stage Settings (V Slice)</h3>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Stage Name:</label>
+                        <input type="text" id="stageName" value="CustomStage" placeholder="CustomStage">
+                    </div>
+                    <div class="config-item">
+                        <label>Stage Directory:</label>
+                        <input type="text" id="stageDirectory" value="custom" placeholder="custom">
+                    </div>
+                </div>
+            </div>
+
+            <div id="stageInputVToPsych" class="input-section single">
+                <div class="input-group">
+                    <label>
+                        V Slice Stage JSON
+                        <span class="label-badge">INPUT</span>
+                    </label>
+                    <textarea id="vSliceStage" placeholder='Paste V Slice Stage JSON here...'></textarea>
+                </div>
+            </div>
+
+            <div id="stageInputPToV" class="input-section" style="display: none;">
+                <div class="input-group">
+                    <label>
+                        Psych Engine Stage JSON
+                        <span class="label-badge">INPUT</span>
+                    </label>
+                    <textarea id="psychStage" placeholder='Paste Psych Engine Stage JSON here...'></textarea>
+                </div>
+                <div class="input-group">
+                    <label>
+                        Psych Engine Stage Lua
+                        <span class="label-badge lua">LUA</span>
+                        <span style="font-size: 0.9em; color: #666;">(Optional)</span>
+                    </label>
+                    <textarea id="psychStageLua" placeholder='Paste Psych Engine Stage Lua script here (optional)...'></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-convert" onclick="convertStage()">
+                    <span>🔄</span>
+                    <span>Convert Stage</span>
+                </button>
+                <button class="btn-download" id="downloadStageBtn" onclick="downloadStage()" disabled>
+                    <span>💾</span>
+                    <span id="downloadStageText">Download</span>
+                </button>
+                <button class="btn-clear" onclick="clearStage()">
+                    <span>🗑️</span>
+                    <span>Clear</span>
+                </button>
+            </div>
+
+            <div id="stageStatus" class="status"></div>
+
+            <div class="output-section" id="stageOutputVToPsych" style="display: block;">
+                <div class="input-section">
+                    <div class="input-group">
+                        <h3>
+                            📤 Psych Engine Stage JSON
+                            <span class="label-badge">OUTPUT</span>
+                        </h3>
+                        <textarea id="outputStageJSON" class="output-textarea" readonly placeholder="Psych Engine Stage JSON will appear here..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <h3>
+                            📤 Psych Engine Stage Lua
+                            <span class="label-badge lua">OUTPUT</span>
+                        </h3>
+                        <textarea id="outputStageLua" class="output-textarea" readonly placeholder="Psych Engine Stage Lua script will appear here..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-section" id="stageOutputPToV" style="display: none;">
+                <h3>
+                    📤 V Slice Stage
+                    <span class="label-badge">OUTPUT</span>
+                </h3>
+                <textarea id="outputVSliceStage" class="output-textarea" readonly placeholder="V Slice Stage will appear here..."></textarea>
             </div>
         </div>
     </div>
 
     <script>
-        let convertedData = null;
+        const state = {
+            chart: { direction: 'vslice-to-psych', convertedData: null },
+            character: { direction: 'vslice-to-psych', convertedData: null },
+            stage: { direction: 'vslice-to-psych', convertedData: null }
+        };
 
+        // ==================== TAB SWITCHING ====================
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            const tabs = ['chart', 'character', 'stage'];
+            const index = tabs.indexOf(tabName);
+            if (index !== -1) {
+                document.querySelector(`.tab:nth-child(${index + 1})`).classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            }
+        }
+
+        // ==================== DIRECTION MANAGEMENT ====================
+        function updateChartDirection() {
+            const direction = document.querySelector('input[name="chartDirection"]:checked').value;
+            state.chart.direction = direction;
+            document.getElementById('chartDir1').classList.toggle('active', direction === 'vslice-to-psych');
+            document.getElementById('chartDir2').classList.toggle('active', direction === 'psych-to-vslice');
+
+            const isVToP = direction === 'vslice-to-psych';
+            document.getElementById('chartConfigVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('chartConfigPToV').style.display = isVToP ? 'none' : 'block';
+            document.getElementById('chartInputVToPsych').style.display = isVToP ? 'grid' : 'none';
+            document.getElementById('chartInputPToV').style.display = isVToP ? 'none' : 'block';
+            document.getElementById('chartOutputVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('chartOutputPToV').style.display = isVToP ? 'none' : 'block';
+            document.getElementById('downloadChartText').textContent = isVToP ? 'Download Chart' : 'Download Charts';
+            clearChart();
+        }
+
+        function updateCharDirection() {
+            const direction = document.querySelector('input[name="charDirection"]:checked').value;
+            state.character.direction = direction;
+            document.getElementById('charDir1').classList.toggle('active', direction === 'vslice-to-psych');
+            document.getElementById('charDir2').classList.toggle('active', direction === 'psych-to-vslice');
+
+            const isVToP = direction === 'vslice-to-psych';
+            document.getElementById('charConfigVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('charConfigPToV').style.display = isVToP ? 'none' : 'block';
+            document.getElementById('charInputVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('charInputPToV').style.display = isVToP ? 'none' : 'block';
+            document.getElementById('charOutputVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('charOutputPToV').style.display = isVToP ? 'none' : 'block';
+            clearCharacter();
+        }
+
+        function updateStageDirection() {
+            const direction = document.querySelector('input[name="stageDirection"]:checked').value;
+            state.stage.direction = direction;
+            document.getElementById('stageDir1').classList.toggle('active', direction === 'vslice-to-psych');
+            document.getElementById('stageDir2').classList.toggle('active', direction === 'psych-to-vslice');
+
+            const isVToP = direction === 'vslice-to-psych';
+            document.getElementById('stageConfigVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('stageConfigPToV').style.display = isVToP ? 'none' : 'block';
+            document.getElementById('stageInputVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('stageInputPToV').style.display = isVToP ? 'none' : 'grid';
+            document.getElementById('stageOutputVToPsych').style.display = isVToP ? 'block' : 'none';
+            document.getElementById('stageOutputPToV').style.display = isVToP ? 'none' : 'block';
+            document.getElementById('downloadStageText').textContent = isVToP ? 'Download Files' : 'Download Stage';
+            clearStage();
+        }
+
+        // ==================== CHART CONVERTER ====================
         function convertChart() {
             try {
-                // Obter inputs
-                const vSliceChartText = document.getElementById('vSliceChart').value;
-                const vSliceMetadataText = document.getElementById('vSliceMetadata').value;
-
-                if (!vSliceChartText || !vSliceMetadataText) {
-                    showStatus('Por favor, preencha ambos os campos (Chart e Metadata)', 'error');
-                    return;
+                if (state.chart.direction === 'vslice-to-psych') {
+                    convertChartVSliceToPsych();
+                } else {
+                    convertChartPsychToVSlice();
                 }
-
-                // Parse JSON
-                const vSliceChart = JSON.parse(vSliceChartText);
-                const vSliceMetadata = JSON.parse(vSliceMetadataText);
-
-                // Converter
-                const psychChart = vSliceToPsychEngine(vSliceChart, vSliceMetadata);
-
-                // Mostrar resultado
-                const outputText = JSON.stringify(psychChart, null, '\t');
-                document.getElementById('outputChart').value = outputText;
-                convertedData = psychChart;
-
-                // Habilitar botão de download
-                document.getElementById('downloadBtn').disabled = false;
-
-                showStatus('✅ Conversão realizada com sucesso!', 'success');
             } catch (error) {
-                showStatus('❌ Erro na conversão: ' + error.message, 'error');
+                showStatus('❌ Conversion error: ' + error.message, 'error', 'chartStatus');
                 console.error(error);
             }
+        }
+
+        function convertChartVSliceToPsych() {
+            const vSliceChartText = document.getElementById('vSliceChart').value;
+            const vSliceMetadataText = document.getElementById('vSliceMetadata').value;
+
+            if (!vSliceChartText || !vSliceMetadataText) {
+                showStatus('⚠️ Please fill both fields (Chart and Metadata)', 'error', 'chartStatus');
+                return;
+            }
+
+            const vSliceChart = JSON.parse(vSliceChartText);
+            const vSliceMetadata = JSON.parse(vSliceMetadataText);
+            const psychChart = vSliceToPsychEngine(vSliceChart, vSliceMetadata);
+
+            document.getElementById('outputChart').value = JSON.stringify(psychChart, null, '\t');
+            state.chart.convertedData = psychChart;
+            document.getElementById('downloadChartBtn').disabled = false;
+
+            showStatus('✅ Chart converted successfully! (V Slice → Psych Engine)', 'success', 'chartStatus');
+        }
+
+        function convertChartPsychToVSlice() {
+            const psychChartText = document.getElementById('psychChart').value;
+
+            if (!psychChartText) {
+                showStatus('⚠️ Please paste the Psych Engine Chart JSON', 'error', 'chartStatus');
+                return;
+            }
+
+            const psychChart = JSON.parse(psychChartText);
+            const { chart, metadata } = psychToVSlice(psychChart);
+
+            document.getElementById('outputVSliceChart').value = JSON.stringify(chart, null, 2);
+            document.getElementById('outputVSliceMetadata').value = JSON.stringify(metadata, null, 2);
+            state.chart.convertedData = { chart, metadata };
+            document.getElementById('downloadChartBtn').disabled = false;
+
+            showStatus('✅ Chart converted successfully! (Psych Engine → V Slice)', 'success', 'chartStatus');
         }
 
         function vSliceToPsychEngine(vSliceChart, vSliceMetadata) {
             const bpm = vSliceMetadata.timeChanges[0].bpm;
             const songName = vSliceMetadata.songName || "Unknown";
-            const scrollSpeed = vSliceChart.scrollSpeed.normal;
-            const notes = vSliceChart.notes.normal || [];
+            const scrollSpeed = vSliceChart.scrollSpeed?.normal || 1;
+            const notes = vSliceChart.notes?.normal || [];
 
-            // Configurações do usuário
             const player1 = document.getElementById('player1').value || 'bf';
             const player2 = document.getElementById('player2').value || 'dad';
             const gfVersion = document.getElementById('gfVersion').value || 'gf';
             const stage = document.getElementById('stage').value || 'stage';
 
-            // Calcular duração de seção (4 beats = 16 steps)
             const msPerBeat = 60000 / bpm;
             const msPerSection = msPerBeat * 4;
 
-            // Encontrar tempo máximo
             const maxTime = notes.length > 0 ? Math.max(...notes.map(n => n.t + (n.l || 0))) : 0;
             const numSections = Math.ceil(maxTime / msPerSection) || 1;
 
-            // Criar seções
             const sections = [];
             for (let i = 0; i < numSections; i++) {
                 const sectionStartTime = i * msPerSection;
@@ -400,37 +997,27 @@ Exemplo:
                 const sectionNotes = notes
                     .filter(note => note.t >= sectionStartTime && note.t < sectionEndTime)
                     .map(note => {
-                        // Mapear direção V Slice para Psych Engine
-                        // V Slice: 0-3 = opponent, 4-7 = player
-                        // Psych: 0-3 para ambos, mustHitSection determina quem
                         let direction = note.d % 4;
-                        const isPlayerNote = note.d >= 4 && note.d <= 7;
+                        const isPlayerNote = note.d >= 4;
+                        const mustHitSection = i % 2 === 1;
                         
-                        // Se a nota é do jogador mas a seção é do oponente (ou vice-versa),
-                        // adicionar 4 para mover para o outro lado
-                        const mustHitSection = i % 2 === 1; // Alternar seções
                         if (isPlayerNote !== mustHitSection) {
                             direction += 4;
                         }
 
-                        return [
-                            note.t,           // tempo
-                            direction,        // direção (0-7)
-                            note.l || 0      // duração sustain
-                        ];
+                        return [note.t, direction, note.l || 0];
                     });
 
                 sections.push({
                     sectionNotes: sectionNotes,
                     lengthInSteps: 16,
-                    mustHitSection: i % 2 === 1, // Alternar entre opponent e player
+                    mustHitSection: i % 2 === 1,
                     bpm: bpm,
                     changeBPM: false,
                     altAnim: false
                 });
             }
 
-            // Retornar chart no formato Psych Engine
             return {
                 song: {
                     song: songName,
@@ -447,16 +1034,568 @@ Exemplo:
             };
         }
 
+        function psychToVSlice(psychChart) {
+            const song = psychChart.song;
+            const bpm = song.bpm || 100;
+            const scrollSpeed = parseFloat(document.getElementById('scrollSpeed').value) || song.speed || 1;
+            const artist = document.getElementById('artist').value || 'Unknown';
+            const charter = document.getElementById('charter').value || 'Converter';
+
+            const notes = [];
+            song.notes.forEach((section, index) => {
+                section.sectionNotes.forEach(note => {
+                    const time = note[0];
+                    let direction = note[1];
+                    const length = note[2];
+
+                    if (direction >= 4) {
+                        direction = direction % 4;
+                    }
+
+                    if (section.mustHitSection) {
+                        direction += 4;
+                    }
+
+                    notes.push({
+                        t: time,
+                        d: direction,
+                        l: length,
+                        p: []
+                    });
+                });
+            });
+
+            notes.sort((a, b) => a.t - b.t);
+
+            const chart = {
+                version: "2.0.0",
+                scrollSpeed: {
+                    normal: scrollSpeed
+                },
+                notes: {
+                    normal: notes
+                }
+            };
+
+            const metadata = {
+                version: "2.2.4",
+                songName: song.song || "Unknown",
+                artist: artist,
+                charter: charter,
+                looped: false,
+                offsets: {
+                    instrumental: 0,
+                    altInstrumentals: {},
+                    vocals: {},
+                    altVocals: {}
+                },
+                playData: {
+                    songVariations: [],
+                    difficulties: ["normal"],
+                    characters: {
+                        player: song.player1 || "bf",
+                        girlfriend: song.gfVersion || "gf",
+                        opponent: song.player2 || "dad",
+                        instrumental: "",
+                        opponentVocals: [song.player2 || "dad"],
+                        playerVocals: [song.player1 || "bf"]
+                    },
+                    stage: song.stage || "stage",
+                    noteStyle: "funkin",
+                    ratings: {
+                        easy: 1,
+                        normal: 3,
+                        hard: 5
+                    },
+                    previewStart: 0,
+                    previewEnd: 0
+                },
+                generatedBy: "Funkin' Converter",
+                timeFormat: "ms",
+                timeChanges: [
+                    {
+                        t: 0,
+                        b: 0,
+                        bpm: bpm,
+                        n: 4,
+                        d: 4,
+                        bt: [4, 4, 4, 4]
+                    }
+                ]
+            };
+
+            return { chart, metadata };
+        }
+
         function downloadChart() {
-            if (!convertedData) {
-                showStatus('❌ Nenhum chart para baixar', 'error');
+            if (!state.chart.convertedData) {
+                showStatus('❌ No chart to download', 'error', 'chartStatus');
                 return;
             }
 
-            const songName = convertedData.song.song || 'converted';
-            const filename = `${songName.toLowerCase().replace(/\s+/g, '-')}.json`;
-            const jsonStr = JSON.stringify(convertedData, null, '\t');
+            if (state.chart.direction === 'vslice-to-psych') {
+                const songName = state.chart.convertedData.song.song || 'converted';
+                const filename = `${songName.toLowerCase().replace(/\s+/g, '-')}.json`;
+                downloadJSON(state.chart.convertedData, filename);
+                showStatus('✅ Psych Engine Chart download started!', 'success', 'chartStatus');
+            } else {
+                const songName = state.chart.convertedData.metadata.songName || 'converted';
+                const baseName = songName.toLowerCase().replace(/\s+/g, '-');
+                downloadJSON(state.chart.convertedData.chart, `${baseName}-chart.json`);
+                downloadJSON(state.chart.convertedData.metadata, `${baseName}-metadata.json`);
+                showStatus('✅ V Slice files download started!', 'success', 'chartStatus');
+            }
+        }
+
+        function clearChart() {
+            document.getElementById('vSliceChart').value = '';
+            document.getElementById('vSliceMetadata').value = '';
+            document.getElementById('psychChart').value = '';
+            document.getElementById('outputChart').value = '';
+            document.getElementById('outputVSliceChart').value = '';
+            document.getElementById('outputVSliceMetadata').value = '';
+            document.getElementById('downloadChartBtn').disabled = true;
+            state.chart.convertedData = null;
+            hideStatus('chartStatus');
+        }
+
+        // ==================== CHARACTER CONVERTER ====================
+        function convertCharacter() {
+            try {
+                if (state.character.direction === 'vslice-to-psych') {
+                    convertCharacterVSliceToPsych();
+                } else {
+                    convertCharacterPsychToVSlice();
+                }
+            } catch (error) {
+                showStatus('❌ Conversion error: ' + error.message, 'error', 'charStatus');
+                console.error(error);
+            }
+        }
+
+        function convertCharacterVSliceToPsych() {
+            const vSliceCharText = document.getElementById('vSliceCharacter').value;
+
+            if (!vSliceCharText) {
+                showStatus('⚠️ Please paste the V Slice Character JSON', 'error', 'charStatus');
+                return;
+            }
+
+            const vSliceChar = JSON.parse(vSliceCharText);
+            const psychChar = vSliceCharToPsychEngine(vSliceChar);
+
+            document.getElementById('outputCharacter').value = JSON.stringify(psychChar, null, '\t');
+            state.character.convertedData = psychChar;
+            document.getElementById('downloadCharBtn').disabled = false;
+
+            showStatus('✅ Character converted successfully! (V Slice → Psych Engine)', 'success', 'charStatus');
+        }
+
+        function convertCharacterPsychToVSlice() {
+            const psychCharText = document.getElementById('psychCharacter').value;
+
+            if (!psychCharText) {
+                showStatus('⚠️ Please paste the Psych Engine Character JSON', 'error', 'charStatus');
+                return;
+            }
+
+            const psychChar = JSON.parse(psychCharText);
+            const vSliceChar = psychCharToVSlice(psychChar);
+
+            document.getElementById('outputVSliceCharacter').value = JSON.stringify(vSliceChar, null, 2);
+            state.character.convertedData = vSliceChar;
+            document.getElementById('downloadCharBtn').disabled = false;
+
+            showStatus('✅ Character converted successfully! (Psych Engine → V Slice)', 'success', 'charStatus');
+        }
+
+        function vSliceCharToPsychEngine(vSliceChar) {
+            const singDuration = parseFloat(document.getElementById('singDuration').value) || 6.1;
+            const danceEvery = parseInt(document.getElementById('danceEvery').value) || 2;
+            const noAntialiasing = document.getElementById('noAntialiasing').checked;
+            const isPlayer = document.getElementById('isPlayer').checked;
+            const healthbarColor = document.getElementById('healthbarColor').value;
+
+            const colorDecimal = parseInt(healthbarColor.replace('#', ''), 16);
+            const colorSigned = colorDecimal > 0x7FFFFFFF ? colorDecimal - 0x100000000 : colorDecimal;
+
+            const animationMap = {
+                'Left': 'singLEFT',
+                'Down': 'singDOWN',
+                'Up': 'singUP',
+                'Right': 'singRIGHT',
+                'Idle0': 'idle',
+                'Idle ALT': 'idle-alt',
+                'Idle': 'idle'
+            };
+
+            const animations = (vSliceChar.animations || []).map(anim => ({
+                offsets: anim.offsets || [0, 0],
+                flipY: false,
+                loop: anim.loop || false,
+                fps: anim.fps || 24,
+                anim: animationMap[anim.name] || anim.name.toLowerCase(),
+                flipX: false,
+                indices: [],
+                name: anim.name
+            }));
+
+            return {
+                animations: animations,
+                no_antialiasing: noAntialiasing,
+                image: vSliceChar.asset || "characters/unknown",
+                position: vSliceChar.position || [0, 0],
+                dance_every: danceEvery,
+                gameover_intial_sound: null,
+                scalableOffsets: false,
+                gameover_confirm_sound: null,
+                healthicon: vSliceChar.healthIcon || "face",
+                gameover_character: null,
+                flip_x: vSliceChar.flipX || false,
+                healthbar_colour: colorSigned,
+                camera_position: vSliceChar.cameraPosition || [0, 0],
+                gameover_loop_sound: null,
+                sing_duration: singDuration,
+                scale: vSliceChar.scale || 1,
+                _editor_isPlayer: isPlayer
+            };
+        }
+
+        function psychCharToVSlice(psychChar) {
+            const defaultFPS = parseInt(document.getElementById('defaultFPS').value) || 24;
+
+            const reverseAnimationMap = {
+                'singLEFT': 'Left',
+                'singDOWN': 'Down',
+                'singUP': 'Up',
+                'singRIGHT': 'Right',
+                'idle': 'Idle0',
+                'idle-alt': 'Idle ALT'
+            };
+
+            const animations = (psychChar.animations || []).map(anim => ({
+                name: reverseAnimationMap[anim.anim] || anim.name || anim.anim,
+                fps: anim.fps || defaultFPS,
+                loop: anim.loop || false,
+                offsets: anim.offsets || [0, 0]
+            }));
+
+            let healthColor = psychChar.healthbar_colour || 0;
+            if (healthColor < 0) {
+                healthColor = healthColor + 0x100000000;
+            }
+            const healthIcon = psychChar.healthicon || "face";
+
+            return {
+                name: healthIcon.charAt(0).toUpperCase() + healthIcon.slice(1),
+                asset: psychChar.image || "characters/unknown",
+                position: psychChar.position || [0, 0],
+                cameraPosition: psychChar.camera_position || [0, 0],
+                scale: psychChar.scale || 1,
+                flipX: psychChar.flip_x || false,
+                healthIcon: healthIcon,
+                animations: animations
+            };
+        }
+
+        function downloadCharacter() {
+            if (!state.character.convertedData) {
+                showStatus('❌ No character to download', 'error', 'charStatus');
+                return;
+            }
+
+            if (state.character.direction === 'vslice-to-psych') {
+                const charName = state.character.convertedData.healthicon || 'character';
+                const filename = `${charName.toLowerCase().replace(/\s+/g, '-')}.json`;
+                downloadJSON(state.character.convertedData, filename);
+                showStatus('✅ Psych Engine Character download started!', 'success', 'charStatus');
+            } else {
+                const charName = state.character.convertedData.name || 'Character';
+                const filename = `${charName.toLowerCase().replace(/\s+/g, '-')}.json`;
+                downloadJSON(state.character.convertedData, filename);
+                showStatus('✅ V Slice Character download started!', 'success', 'charStatus');
+            }
+        }
+
+        function clearCharacter() {
+            document.getElementById('vSliceCharacter').value = '';
+            document.getElementById('psychCharacter').value = '';
+            document.getElementById('outputCharacter').value = '';
+            document.getElementById('outputVSliceCharacter').value = '';
+            document.getElementById('downloadCharBtn').disabled = true;
+            state.character.convertedData = null;
+            hideStatus('charStatus');
+        }
+
+        // ==================== STAGE CONVERTER ====================
+        function convertStage() {
+            try {
+                if (state.stage.direction === 'vslice-to-psych') {
+                    convertStageVSliceToPsych();
+                } else {
+                    convertStagePsychToVSlice();
+                }
+            } catch (error) {
+                showStatus('❌ Conversion error: ' + error.message, 'error', 'stageStatus');
+                console.error(error);
+            }
+        }
+
+        function convertStageVSliceToPsych() {
+            const vSliceStageText = document.getElementById('vSliceStage').value;
+
+            if (!vSliceStageText) {
+                showStatus('⚠️ Please paste the V Slice Stage JSON', 'error', 'stageStatus');
+                return;
+            }
+
+            const vSliceStage = JSON.parse(vSliceStageText);
+            const { json, lua } = vSliceStageToPsychEngine(vSliceStage);
+
+            document.getElementById('outputStageJSON').value = JSON.stringify(json, null, '\t');
+            document.getElementById('outputStageLua').value = lua;
+            state.stage.convertedData = { json, lua };
+            document.getElementById('downloadStageBtn').disabled = false;
+
+            showStatus('✅ Stage converted successfully! (V Slice → Psych Engine)', 'success', 'stageStatus');
+        }
+
+        function convertStagePsychToVSlice() {
+            const psychStageText = document.getElementById('psychStage').value;
+            const psychStageLuaText = document.getElementById('psychStageLua').value;
+
+            if (!psychStageText) {
+                showStatus('⚠️ Please paste the Psych Engine Stage JSON', 'error', 'stageStatus');
+                return;
+            }
+
+            const psychStage = JSON.parse(psychStageText);
+            const vSliceStage = psychStageToVSlice(psychStage, psychStageLuaText);
+
+            document.getElementById('outputVSliceStage').value = JSON.stringify(vSliceStage, null, 2);
+            state.stage.convertedData = vSliceStage;
+            document.getElementById('downloadStageBtn').disabled = false;
+
+            showStatus('✅ Stage converted successfully! (Psych Engine → V Slice)', 'success', 'stageStatus');
+        }
+
+        function vSliceStageToPsychEngine(vSliceStage) {
+            const generateLua = document.getElementById('generateLua').checked;
             
+            // Create JSON
+            const json = {
+                directory: vSliceStage.directory || "",
+                defaultZoom: vSliceStage.cameraZoom || 0.9,
+                isPixelStage: false,
+                boyfriend: vSliceStage.characters?.bf?.position || [770, 100],
+                girlfriend: vSliceStage.characters?.gf?.position || [400, 130],
+                opponent: vSliceStage.characters?.dad?.position || [100, 100],
+                hide_girlfriend: false,
+                camera_boyfriend: vSliceStage.characters?.bf?.cameraOffsets || [0, 0],
+                camera_opponent: vSliceStage.characters?.dad?.cameraOffsets || [0, 0],
+                camera_girlfriend: vSliceStage.characters?.gf?.cameraOffsets || [0, 0],
+                camera_speed: 1
+            };
+
+            // Generate Lua script
+            let lua = '';
+            if (generateLua && vSliceStage.props) {
+                lua = `function onCreate()\n`;
+                
+                // Sort props by zIndex
+                const sortedProps = [...vSliceStage.props].sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
+                
+                sortedProps.forEach((prop, index) => {
+                    const spriteName = prop.name || `sprite${index}`;
+                    const assetPath = prop.assetPath || `stages/${vSliceStage.directory || 'unknown'}/${spriteName}`;
+                    const x = prop.position ? prop.position[0] : 0;
+                    const y = prop.position ? prop.position[1] : 0;
+                    const scaleX = prop.scale ? prop.scale[0] : 1;
+                    const scaleY = prop.scale ? prop.scale[1] : 1;
+                    const alpha = prop.alpha !== undefined ? prop.alpha : 1;
+                    const scrollX = prop.scroll ? prop.scroll[0] : 1;
+                    const scrollY = prop.scroll ? prop.scroll[1] : 1;
+                    
+                    lua += `\n    makeLuaSprite('${spriteName}', '${assetPath}', ${x}, ${y})\n`;
+                    
+                    if (!prop.isPixel) {
+                        lua += `    setProperty('${spriteName}.antialiasing', getPropertyFromClass('backend.ClientPrefs', 'data.globalAntialiasing'))\n`;
+                    }
+                    
+                    if (scaleX !== 1 || scaleY !== 1) {
+                        lua += `    scaleObject('${spriteName}', ${scaleX}, ${scaleY})\n`;
+                    }
+                    
+                    if (alpha !== 1) {
+                        lua += `    setProperty('${spriteName}.alpha', ${alpha})\n`;
+                    }
+                    
+                    if (scrollX !== 1 || scrollY !== 1) {
+                        lua += `    setScrollFactor('${spriteName}', ${scrollX}, ${scrollY})\n`;
+                    }
+                    
+                    // Determine if sprite is in front (zIndex > character zIndex)
+                    const charZIndex = vSliceStage.characters?.bf?.zIndex || 300;
+                    const inFront = (prop.zIndex || 0) > charZIndex;
+                    
+                    lua += `    addLuaSprite('${spriteName}', ${inFront})\n`;
+                });
+                
+                lua += `end\n`;
+            } else {
+                lua = `-- No props to convert or Lua generation disabled\nfunction onCreate()\n    -- Add your stage sprites here\nend\n`;
+            }
+
+            return { json, lua };
+        }
+
+        function psychStageToVSlice(psychStage, luaScript) {
+            const stageName = document.getElementById('stageName').value || 'CustomStage';
+            const stageDirectory = document.getElementById('stageDirectory').value || 'custom';
+            
+            const props = [];
+            
+            // Parse Lua script if provided
+            if (luaScript) {
+                const sprites = parseLuaSprites(luaScript);
+                sprites.forEach((sprite, index) => {
+                    props.push({
+                        danceEvery: 0,
+                        zIndex: sprite.inFront ? 400 : 10 + (index * 10),
+                        position: sprite.position || [0, 0],
+                        scale: sprite.scale || [1, 1],
+                        animType: "sparrow",
+                        startingAnimation: "",
+                        name: sprite.name || `prop${index}`,
+                        isPixel: sprite.isPixel || false,
+                        assetPath: sprite.assetPath || "",
+                        scroll: sprite.scroll || [1, 1],
+                        alpha: sprite.alpha !== undefined ? sprite.alpha : 1,
+                        animations: []
+                    });
+                });
+            }
+
+            return {
+                version: "1.0.0",
+                name: stageName,
+                directory: stageDirectory,
+                cameraZoom: psychStage.defaultZoom || 0.9,
+                props: props,
+                characters: {
+                    bf: {
+                        zIndex: 300,
+                        position: psychStage.boyfriend || [770, 100],
+                        cameraOffsets: psychStage.camera_boyfriend || [0, 0]
+                    },
+                    dad: {
+                        zIndex: 250,
+                        position: psychStage.opponent || [100, 100],
+                        cameraOffsets: psychStage.camera_opponent || [0, 0]
+                    },
+                    gf: {
+                        zIndex: 150,
+                        position: psychStage.girlfriend || [400, 130],
+                        cameraOffsets: psychStage.camera_girlfriend || [0, 0]
+                    }
+                }
+            };
+        }
+
+        function parseLuaSprites(luaScript) {
+            const sprites = [];
+            const lines = luaScript.split('\n');
+            let currentSprite = null;
+
+            lines.forEach(line => {
+                line = line.trim();
+
+                // makeLuaSprite
+                const spriteMatch = line.match(/makeLuaSprite\('([^']+)',\s*'([^']+)',\s*([-\d.]+),\s*([-\d.]+)\)/);
+                if (spriteMatch) {
+                    if (currentSprite) sprites.push(currentSprite);
+                    currentSprite = {
+                        name: spriteMatch[1],
+                        assetPath: spriteMatch[2],
+                        position: [parseFloat(spriteMatch[3]), parseFloat(spriteMatch[4])],
+                        scale: [1, 1],
+                        scroll: [1, 1],
+                        alpha: 1,
+                        isPixel: false,
+                        inFront: false
+                    };
+                }
+
+                if (!currentSprite) return;
+
+                // scaleObject
+                const scaleMatch = line.match(/scaleObject\('[^']+',\s*([-\d.]+),\s*([-\d.]+)\)/);
+                if (scaleMatch) {
+                    currentSprite.scale = [parseFloat(scaleMatch[1]), parseFloat(scaleMatch[2])];
+                }
+
+                // setProperty alpha
+                const alphaMatch = line.match(/setProperty\('[^']+\.alpha',\s*([-\d.]+)\)/);
+                if (alphaMatch) {
+                    currentSprite.alpha = parseFloat(alphaMatch[1]);
+                }
+
+                // setScrollFactor
+                const scrollMatch = line.match(/setScrollFactor\('[^']+',\s*([-\d.]+),\s*([-\d.]+)\)/);
+                if (scrollMatch) {
+                    currentSprite.scroll = [parseFloat(scrollMatch[1]), parseFloat(scrollMatch[2])];
+                }
+
+                // addLuaSprite
+                const addMatch = line.match(/addLuaSprite\('[^']+',\s*(true|false)\)/);
+                if (addMatch) {
+                    currentSprite.inFront = addMatch[1] === 'true';
+                }
+
+                // antialiasing check (if missing, it's pixel art)
+                if (line.includes('antialiasing')) {
+                    currentSprite.isPixel = false;
+                }
+            });
+
+            if (currentSprite) sprites.push(currentSprite);
+            return sprites;
+        }
+
+        function downloadStage() {
+            if (!state.stage.convertedData) {
+                showStatus('❌ No stage to download', 'error', 'stageStatus');
+                return;
+            }
+
+            if (state.stage.direction === 'vslice-to-psych') {
+                const stageName = 'stage';
+                downloadJSON(state.stage.convertedData.json, `${stageName}.json`);
+                downloadText(state.stage.convertedData.lua, `${stageName}.lua`);
+                showStatus('✅ Psych Engine Stage files download started!', 'success', 'stageStatus');
+            } else {
+                const stageName = state.stage.convertedData.name || 'stage';
+                const filename = `${stageName.toLowerCase().replace(/\s+/g, '-')}.json`;
+                downloadJSON(state.stage.convertedData, filename);
+                showStatus('✅ V Slice Stage download started!', 'success', 'stageStatus');
+            }
+        }
+
+        function clearStage() {
+            document.getElementById('vSliceStage').value = '';
+            document.getElementById('psychStage').value = '';
+            document.getElementById('psychStageLua').value = '';
+            document.getElementById('outputStageJSON').value = '';
+            document.getElementById('outputStageLua').value = '';
+            document.getElementById('outputVSliceStage').value = '';
+            document.getElementById('downloadStageBtn').disabled = true;
+            state.stage.convertedData = null;
+            hideStatus('stageStatus');
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function downloadJSON(data, filename) {
+            const jsonStr = JSON.stringify(data, null, '\t');
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -464,55 +1603,30 @@ Exemplo:
             a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
-
-            showStatus('✅ Download iniciado!', 'success');
         }
 
-        function clearAll() {
-            document.getElementById('vSliceChart').value = '';
-            document.getElementById('vSliceMetadata').value = '';
-            document.getElementById('outputChart').value = '';
-            document.getElementById('downloadBtn').disabled = true;
-            convertedData = null;
-            hideStatus();
+        function downloadText(text, filename) {
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status');
+        function showStatus(message, type, statusId) {
+            const statusDiv = document.getElementById(statusId);
             statusDiv.textContent = message;
             statusDiv.className = 'status ' + type;
             statusDiv.style.display = 'block';
         }
 
-        function hideStatus() {
-            document.getElementById('status').style.display = 'none';
-        }
-
-        // Exemplo de dados para teste rápido
-        function loadExample() {
-            const exampleChart = {
-                "version": "2.0.0",
-                "scrollSpeed": { "normal": 2.7 },
-                "notes": {
-                    "normal": [
-                        { "t": 2327.58620689655, "d": 5, "l": 0, "p": [] },
-                        { "t": 2500, "d": 7, "l": 0, "p": [] },
-                        { "t": 2758.62068965517, "d": 6, "l": 0, "p": [] }
-                    ]
-                }
-            };
-
-            const exampleMetadata = {
-                "version": "2.2.4",
-                "songName": "Test-Song",
-                "artist": "Unknown",
-                "timeChanges": [
-                    { "t": 0, "b": 0, "bpm": 87, "n": 4, "d": 4 }
-                ]
-            };
-
-            document.getElementById('vSliceChart').value = JSON.stringify(exampleChart, null, 2);
-            document.getElementById('vSliceMetadata').value = JSON.stringify(exampleMetadata, null, 2);
+        function hideStatus(statusId) {
+            const statusDiv = document.getElementById(statusId);
+            if (statusDiv) {
+                statusDiv.style.display = 'none';
+            }
         }
     </script>
 </body>
